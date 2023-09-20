@@ -10,12 +10,13 @@ Dividido em duas seções:
         @attribute Grau {BC,MC,Bacharel,Mestre,Doutor}
 - dados (@data)
 
-
-Linhas em branco antes dos atributos, entre atributos e entre um atributo e o token @data devem ser ignoradas
+Linhas em branco antes dos atributos, entre atributos e entre um atributo e o 
+token @data devem ser ignoradas
 
 1. Abre um arquivo no formato ARFF
 2. Lê a sua seção de atributos
-3. Para cada atributo armazena o seu rótulo, tipo e categorias em uma estrutura como a definida a seguir
+3. Para cada atributo armazena o seu rótulo, tipo e categorias em uma estrutura 
+como a definida a seguir
 
 typedef struct {
     char *rotulo;
@@ -23,8 +24,10 @@ typedef struct {
     char *categorias;
 } atributo;
 
-Se o tipo for númerico ou textual, em "tipo" deve constar, respectivamente "numeric" e "string", em "categorias" deve existir zero (NULL);
-Se o tipo for categórico, em "tipo" deve constar "categoric" e em categorias deve constar um vetor com todas as categorias.
+Se o tipo for númerico ou textual, em "tipo" deve constar, respectivamente "numeric" e 
+"string", em "categorias" deve existir zero (NULL);
+Se o tipo for categórico, em "tipo" deve constar "categoric" e em categorias deve constar 
+um vetor com todas as categorias.
 
 Considere que:
 - Nenhuma linha de atributo terá mais do que 1024 caracteres;
@@ -32,7 +35,8 @@ Considere que:
 - Não haverão espaços no início e no final de uma linha de atributos;
 - Atributos categóricos terão seus valores sempre definidos corretamente
 
-- Uma linha de atributo pode conter menos ou mais elementos, além dos necessários (o programa deve tratar esse possível erro)
+- Uma linha de atributo pode conter menos ou mais elementos, além dos necessários 
+(o programa deve tratar esse possível erro)
 - Uma linha de atributo não iniciada com "@atributte" deve ser indicada como erro.
 
 # Avaliação 2
