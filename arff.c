@@ -119,7 +119,8 @@ void valida_arff(FILE *arff, atributo *atributos, int quantidade)
       elementos++;
     }
 
-    if (quantidade != elementos) {
+    if (quantidade != elementos)
+    {
       fprintf(stderr, "Erro: linha %d do arquivo arff\n", linhas);
       exit(EXIT_FAILURE);
     }

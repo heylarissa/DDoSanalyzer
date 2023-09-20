@@ -3,7 +3,9 @@
 
 #define LINESIZE 1024
 #include <stdio.h>
-typedef struct {
+
+typedef struct
+{
   char *rotulo;
   char *tipo;
   char *categorias;
@@ -12,7 +14,7 @@ typedef struct {
 void exibe_atributos(atributo *infos, int quantidade);
 int conta_atributos(FILE *arff);
 void processa_categorias(atributo *elemento, char *categorias);
-atributo* processa_atributos(FILE *arff, int quantidade);
+atributo *processa_atributos(FILE *arff, int quantidade);
 void valida_arff(FILE *arff, atributo *atributos, int quantidade);
 
 #endif
