@@ -21,6 +21,7 @@ void exibe_atributos(atributo *infos, int quantidade)
     printf("-> Atributo #%d\n", i + 1);
     printf("Rótulo: %s\n", infos[i].rotulo);
     printf("Tipo: %s\n", infos[i].tipo);
+    // mudar para usar categorias como vetor
     // if (infos[i].categorias)
     //   printf("Categorias: %s\n", infos[i].categorias);
     if (i < quantidade - 1)
@@ -41,6 +42,9 @@ int conta_atributos(FILE *arff)
     {
       attributeCount++;
     }
+    else if (strstr(line, "@data") != NULL) {
+      break;
+    }
   }
 
   return attributeCount;
@@ -59,7 +63,7 @@ atributo *processa_atributos(FILE *arff, int quantidade)
   atributo *atributos = NULL; // vetor
   int numAtributos = 0;
   rewind(arff);
-  
+
   while (fgets(line, sizeof(line), arff) != NULL)
   {
     if (strstr(line, "@attribute") == line)
@@ -80,6 +84,11 @@ atributo *processa_atributos(FILE *arff, int quantidade)
       atributos = realloc(atributos, numAtributos * sizeof(atributo));
       atributos[numAtributos - 1] = novoAtributo;
     }
+
+    else if (strstr(line, "@data") != NULL)
+    {
+      break; // Sai do loop quando "@data" é encontrado
+    }
   }
 
   return atributos;
@@ -87,6 +96,12 @@ atributo *processa_atributos(FILE *arff, int quantidade)
 
 void valida_arff(FILE *arff, atributo *atributos, int quantidade)
 {
-  // Recebe um arquivo arff com ponteiro de leitura antes do "@data"; passa por todas as linhas de dados e valida cada elementos de cada coluna em
+  // Recebe um arquivo arff com ponteiro de leitura antes do "@data"; 
+  // passa por todas as linhas de dados e valida cada elementos de cada coluna em
   // relação ao vetor de atributos também fornecido como argumento.
+
+  char line[LINESIZE];
+  fgets(line, sizeof(line), arff);
+  printf("Linha lida: %s", line);
+  printf("Cai foraaaaa linha: %ld\n", ftell(arff));
 }

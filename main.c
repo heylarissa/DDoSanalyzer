@@ -78,7 +78,7 @@ int main(int argc, char **argv)
   }
   if (validacao)
   {
-    rewind(arquivo);
+    //rewind(arquivo);
     valida_arff(arquivo, dados_atributos, qntd_atributos);
   }
   if (ataques)
