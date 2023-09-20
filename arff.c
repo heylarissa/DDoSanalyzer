@@ -42,7 +42,8 @@ int conta_atributos(FILE *arff)
     {
       attributeCount++;
     }
-    else if (strstr(line, "@data") != NULL) {
+    else if (strstr(line, "@data") != NULL)
+    {
       break;
     }
   }
@@ -52,7 +53,8 @@ int conta_atributos(FILE *arff)
 
 void processa_categorias(atributo *elemento, char *categorias)
 {
-  // Recbe uma string com as categorias e atualiza o elemento com um vetor de strings (modificar a struct)
+  // Recbe uma string com as categorias e atualiza o elemento
+  // com um vetor de strings (modificar a struct)
 }
 
 atributo *processa_atributos(FILE *arff, int quantidade)
@@ -79,12 +81,10 @@ atributo *processa_atributos(FILE *arff, int quantidade)
       // mudar para estrutura de vetor
       novoAtributo.categorias = NULL;
 
-      // Adicione o novo atributo à lista
       numAtributos++;
       atributos = realloc(atributos, numAtributos * sizeof(atributo));
       atributos[numAtributos - 1] = novoAtributo;
     }
-
     else if (strstr(line, "@data") != NULL)
     {
       break; // Sai do loop quando "@data" é encontrado
@@ -96,12 +96,32 @@ atributo *processa_atributos(FILE *arff, int quantidade)
 
 void valida_arff(FILE *arff, atributo *atributos, int quantidade)
 {
-  // Recebe um arquivo arff com ponteiro de leitura antes do "@data"; 
+  // Recebe um arquivo arff com ponteiro de leitura antes do "@data";
   // passa por todas as linhas de dados e valida cada elementos de cada coluna em
   // relação ao vetor de atributos também fornecido como argumento.
 
   char line[LINESIZE];
-  fgets(line, sizeof(line), arff);
-  printf("Linha lida: %s", line);
-  printf("Cai foraaaaa linha: %ld\n", ftell(arff));
+  char *token;
+  int elementos, linhas = 0;
+
+  while (fgets(line, sizeof(line), arff) != NULL)
+  {
+    elementos = 0;
+    linhas++;
+
+    // Use strtok para dividir a string por vírgulas
+    token = strtok(line, ",");
+
+    while (token != NULL)
+    {
+      // Para obter o próximo elemento
+      token = strtok(NULL, ",");
+      elementos++;
+    }
+
+    if (quantidade != elementos) {
+      fprintf(stderr, "Erro: linha %d do arquivo arff\n", linhas);
+      exit(EXIT_FAILURE);
+    }
+  }
 }
