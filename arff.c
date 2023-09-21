@@ -55,6 +55,8 @@ void processa_categorias(atributo *elemento, char *categorias)
 {
   // Recbe uma string com as categorias e atualiza o elemento
   // com um vetor de strings (modificar a struct)
+
+  
 }
 
 atributo *processa_atributos(FILE *arff, int quantidade)
@@ -76,8 +78,12 @@ atributo *processa_atributos(FILE *arff, int quantidade)
       token = strtok(NULL, " ");           // Pula o "@attribute"
       novoAtributo.rotulo = strdup(token); // Copia o rótulo
       token = strtok(NULL, " ");           // Pega o nome
-      novoAtributo.tipo = strdup(token);   // Copia o tipo
-
+      novoAtributo.tipo = strdup(token);   // Copia o tipo 
+      // se o tipo for categórico, deve constar "categoric"
+      
+      if ((strcmp(token, "string\n") != 0) && (strcmp(token, "numeric\n") !=0)) {
+        novoAtributo.tipo = strdup("categoric");
+      }
       // mudar para estrutura de vetor
       novoAtributo.categorias = NULL;
 
