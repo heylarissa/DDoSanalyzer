@@ -53,10 +53,46 @@ int conta_atributos(FILE *arff)
 
 void processa_categorias(atributo *elemento, char *categorias)
 {
-  // Recbe uma string com as categorias e atualiza o elemento
+  // Recebe uma string com as categorias e atualiza o elemento
   // com um vetor de strings (modificar a struct)
+  char *vetor[10]; // Suponhamos que você tenha um máximo de 10 elementos
+  int numElementos = 0;
+  // Remove os caracteres '{' e '}' da string de entrada
+  if (strcmp(strdup(elemento->tipo), "categoric\n") == 0)
+  {
+    int i, j = 0;
+    int length = strlen(categorias);
 
-  
+    for (i = 0; i < length; i++)
+    {
+      if (categorias[i] != '{' && categorias[i] != '}')
+      {
+        categorias[j++] = categorias[i];
+      }
+    }
+
+    categorias[j] = '\0'; // Adiciona o terminador nulo para indicar o fim da nova string
+
+    char *token = strtok(categorias, ","); // Divide a string na primeira vírgula
+
+    while (token != NULL)
+    {
+      if (numElementos < 10)
+      {
+        vetor[numElementos] = token; // Armazena o elemento no vetor
+        numElementos++;
+      }
+      token = strtok(NULL, ","); // Divide a string no próximo elemento
+    }
+
+    // Imprime os elementos do vetor
+    for (int i = 0; i < numElementos; i++)
+    {
+      printf("Elemento %d: %s\n", i, vetor[i]);
+    }
+  }
+
+  elemento->categorias = vetor;
 }
 
 atributo *processa_atributos(FILE *arff, int quantidade)
@@ -78,14 +114,17 @@ atributo *processa_atributos(FILE *arff, int quantidade)
       token = strtok(NULL, " ");           // Pula o "@attribute"
       novoAtributo.rotulo = strdup(token); // Copia o rótulo
       token = strtok(NULL, " ");           // Pega o nome
-      novoAtributo.tipo = strdup(token);   // Copia o tipo 
       // se o tipo for categórico, deve constar "categoric"
-      
-      if ((strcmp(token, "string\n") != 0) && (strcmp(token, "numeric\n") !=0)) {
-        novoAtributo.tipo = strdup("categoric");
+
+      if ((strcmp(token, "string\n") != 0) && (strcmp(token, "numeric\n") != 0))
+      {
+        novoAtributo.tipo = strdup("categoric\n");
       }
-      // mudar para estrutura de vetor
-      novoAtributo.categorias = NULL;
+      else
+      {
+        novoAtributo.tipo = strdup(token); // Copia o tipo
+      }
+      processa_categorias(&novoAtributo, token);
 
       numAtributos++;
       atributos = realloc(atributos, numAtributos * sizeof(atributo));
