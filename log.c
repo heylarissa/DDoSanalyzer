@@ -36,19 +36,21 @@ void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
     int id_atributo = busca_atributo(dados, quantidade, "PKT_CLASS");
 
     int i = 0;
+
     while (fgets(line, sizeof(line), arquivo) != NULL)
     {
+        i = 0;
         token = strtok(line, ",");
         while (token != NULL)
         {
-            if (i == id_atributo && strcmp(token, "Normal") != 0)
+            if (i == id_atributo)
             {
-                printf("%s", token);
+                printf("i: %s", token);
             }
             i++;
             token = strtok(NULL, ",");
         }
-        break;
+        fgets(line, sizeof(line), arquivo);
     }
 }
 
