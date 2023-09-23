@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "arff.h": "c",
+        "string.h": "c"
+    }
+}

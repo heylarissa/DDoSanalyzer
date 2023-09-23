@@ -21,6 +21,7 @@ void exibe_atributos(atributo *infos, int quantidade)
     printf("-> Atributo #%d\n", i + 1);
     printf("Rótulo: %s\n", infos[i].rotulo);
     printf("Tipo: %s\n", infos[i].tipo);
+    
     if (infos[i].categorias != NULL)
     {
       printf("Categorias: ");
