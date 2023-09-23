@@ -21,7 +21,7 @@ void exibe_atributos(atributo *infos, int quantidade)
     printf("-> Atributo #%d\n", i + 1);
     printf("Rótulo: %s\n", infos[i].rotulo);
     printf("Tipo: %s\n", infos[i].tipo);
-    
+
     if (infos[i].categorias != NULL)
     {
       printf("Categorias: ");
@@ -144,7 +144,7 @@ void valida_arff(FILE *arff, atributo *atributos, int quantidade)
   // passa por todas as linhas de dados e valida cada elementos de cada coluna em
   // relação ao vetor de atributos também fornecido como argumento.
 
-  char line[LINESIZE];
+  char line[LINESIZE + 1];
   char *token;
   int elementos, linhas = 0;
 

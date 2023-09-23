@@ -85,7 +85,7 @@ int main(int argc, char **argv)
   if (ataques)
   {
     // Chamar a função de relatórios de ataque;
-    get_ataques(dados_atributos, qntd_atributos);
+    get_ataques(dados_atributos, qntd_atributos, arquivo);
   }
   if (entidades)
   {
