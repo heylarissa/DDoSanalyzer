@@ -23,11 +23,14 @@ void exibe_atributos(atributo *infos, int quantidade)
     printf("Tipo: %s\n", infos[i].tipo);
     if (infos[i].categorias != NULL)
     {
+      printf("Categorias: ");
+
       for (int j = 0; j < infos[i].size_categorias; j++)
       {
-        printf("Elemento %d: %s\n", j, infos[i].categorias[j]);
+        printf("%s - ", infos[i].categorias[j]);
       }
     }
+    printf("\n");
 
     if (i < quantidade - 1)
       printf("------------------------------\n");
@@ -80,7 +83,6 @@ void processa_categorias(atributo *elemento, char *categorias)
   i = 0;
   elemento->categorias = (char **)malloc((num_elementos + 1) * sizeof(char *));
   elemento->size_categorias = num_elementos;
-  // printf("%s", token);
 
   while (token != NULL)
   {
