@@ -21,9 +21,14 @@ void exibe_atributos(atributo *infos, int quantidade)
     printf("-> Atributo #%d\n", i + 1);
     printf("Rótulo: %s\n", infos[i].rotulo);
     printf("Tipo: %s\n", infos[i].tipo);
-    // mudar para usar categorias como vetor
-    // if (infos[i].categorias)
-    //   printf("Categorias: %s\n", infos[i].categorias);
+    if (infos[i].categorias != NULL)
+    {
+      for (int j = 0; j < infos[i].size_categorias; j++)
+      {
+        printf("Elemento %d: %s\n", j, infos[i].categorias[j]);
+      }
+    }
+
     if (i < quantidade - 1)
       printf("------------------------------\n");
   }
@@ -54,52 +59,43 @@ int conta_atributos(FILE *arff)
 void processa_categorias(atributo *elemento, char *categorias)
 {
   // Recebe uma string com as categorias e atualiza o elemento
-  // com um vetor de strings (modificar a struct)
-  char *vetor[10]; // Suponhamos que você tenha um máximo de 10 elementos
-  int numElementos = 0;
-  // Remove os caracteres '{' e '}' da string de entrada
-  if (strcmp(strdup(elemento->tipo), "categoric\n") == 0)
+  // com um vetor de strings
+  elemento->size_categorias = 0;
+
+  int i, j = 0;
+  categorias[strlen(categorias) - 2] = '\0';
+  categorias++; // Avance além do '{'
+  char *cat_copy = strdup(categorias);
+
+  char *token = strtok(categorias, ",");
+  int num_elementos = 0;
+
+  while (token != NULL)
   {
-    int i, j = 0;
-    int length = strlen(categorias);
-
-    for (i = 0; i < length; i++)
-    {
-      if (categorias[i] != '{' && categorias[i] != '}')
-      {
-        categorias[j++] = categorias[i];
-      }
-    }
-
-    categorias[j] = '\0'; // Adiciona o terminador nulo para indicar o fim da nova string
-
-    char *token = strtok(categorias, ","); // Divide a string na primeira vírgula
-
-    while (token != NULL)
-    {
-      if (numElementos < 10)
-      {
-        vetor[numElementos] = token; // Armazena o elemento no vetor
-        numElementos++;
-      }
-      token = strtok(NULL, ","); // Divide a string no próximo elemento
-    }
-
-    // Imprime os elementos do vetor
-    for (int i = 0; i < numElementos; i++)
-    {
-      printf("Elemento %d: %s\n", i, vetor[i]);
-    }
+    num_elementos++;
+    token = strtok(NULL, ",");
   }
 
-  elemento->categorias = vetor;
+  token = strtok(cat_copy, ",");
+  i = 0;
+  elemento->categorias = (char **)malloc((num_elementos + 1) * sizeof(char *));
+  elemento->size_categorias = num_elementos;
+  // printf("%s", token);
+
+  while (token != NULL)
+  {
+    elemento->categorias[i] = strdup(token);
+
+    token = strtok(NULL, ",");
+    i++;
+  }
 }
 
 atributo *processa_atributos(FILE *arff, int quantidade)
 {
   // Função do A1 (com modificações para o atributo de categorias)
 
-  char line[256];             // Tamanho da linha arbitrário
+  char line[LINESIZE + 1];    // Tamanho da linha arbitrário
   atributo *atributos = NULL; // vetor
   int numAtributos = 0;
   rewind(arff);
@@ -108,23 +104,23 @@ atributo *processa_atributos(FILE *arff, int quantidade)
   {
     if (strstr(line, "@attribute") == line)
     {
-
       atributo novoAtributo;
       char *token = strtok(line, " ");
       token = strtok(NULL, " ");           // Pula o "@attribute"
       novoAtributo.rotulo = strdup(token); // Copia o rótulo
       token = strtok(NULL, " ");           // Pega o nome
-      // se o tipo for categórico, deve constar "categoric"
 
       if ((strcmp(token, "string\n") != 0) && (strcmp(token, "numeric\n") != 0))
       {
         novoAtributo.tipo = strdup("categoric\n");
+        processa_categorias(&novoAtributo, token);
       }
       else
       {
+        novoAtributo.categorias = NULL;
+        novoAtributo.size_categorias = 0;
         novoAtributo.tipo = strdup(token); // Copia o tipo
       }
-      processa_categorias(&novoAtributo, token);
 
       numAtributos++;
       atributos = realloc(atributos, numAtributos * sizeof(atributo));

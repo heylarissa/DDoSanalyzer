@@ -9,6 +9,7 @@ typedef struct
   char *rotulo;
   char *tipo;
   char **categorias;
+  int size_categorias;
 } atributo;
 
 void exibe_atributos(atributo *infos, int quantidade);

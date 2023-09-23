@@ -72,6 +72,7 @@ int main(int argc, char **argv)
   }
 
   atributo *dados_atributos = processa_atributos(arquivo, qntd_atributos);
+  // printf("%s\n", dados_atributos[0].categorias[0]);
   if (exibicao)
   {
     exibe_atributos(dados_atributos, qntd_atributos);
