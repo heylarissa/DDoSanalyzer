@@ -43,7 +43,7 @@ void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
         token = strtok(line, ",");
         while (token != NULL)
         {
-            if (i == id_atributo)
+            if (i == id_atributo && strcmp(token, "Normal\n") != 0)
             {
                 printf("i: %s", token);
             }
