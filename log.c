@@ -70,6 +70,9 @@ void write_log_entidades(log *data, int data_size, char *filename)
             {
                 strcat(escrita, "maliciosa");
             }
+            else {
+                strcat(escrita, "benigna");
+            }
             escrita = strcat(escrita, "\n");
 
             fputs(escrita, output);
@@ -81,12 +84,6 @@ void write_log_entidades(log *data, int data_size, char *filename)
 /* Gera o relatório de ataque (nome_do_ataque; numero_de_ocorrências) */
 void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
 {
-    /*
-    Etapa 1: Valida se existe o atributo com o rótulo PKT_CLASS
-    Etapa 2: Busca nos dados o valor para esse atributo
-    Etapa 3: Quando achar, busca na lista de ataques e soma 1 a ocorrências
-    */
-
     log *ataques;
     FILE *output;
     output = fopen(ATAQUES_FILE, "w");
