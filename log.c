@@ -57,7 +57,7 @@ void write_log_entidades(log *data, int data_size, char *filename)
     {
         if (strcmp(data[k].nome, "Normal") != 0)
         {
-            printf("SRC_ADD: %s\nOcorrencias: %d\n\n", data[k].nome, data[k].ocorrencias);
+            printf("SRC_ADD: %s\nOcorrências: %d\n\n", data[k].nome, data[k].ocorrencias);
             char *escrita;
             escrita = strcat(data[k].nome, ";");
 
@@ -194,12 +194,13 @@ void get_entidades(atributo *dados, int quantidade, FILE *arquivo)
             entidades = realloc(entidades, entidades_tam * sizeof(log));
             entidades[entidades_tam - 1] = novaEntidade;
         }
-        // printf("src %s ocorrencias %d\n", entidades[w].nome, entidades[w].ocorrencias);
     }
 
     // escreve entidades
     write_log_entidades(entidades, entidades_tam, ENTIDADES_FILE);
 }
 
-void get_tamanho(atributo *dados, int quantidade) {}
+void get_tamanho(atributo *dados, int quantidade, FILE *arquivo) {
+    
+}
 void get_firewall(atributo *dados, int quantidade) {}

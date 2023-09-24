@@ -88,13 +88,13 @@ int main(int argc, char **argv)
   }
   if (validacao)
   {
+    fseek(arquivo, posicao_data, SEEK_SET);
     valida_arff(arquivo, dados_atributos, qntd_atributos); // semi ok
   }
   if (ataques)
   {
     // Chamar a função de relatórios de ataque;
     fseek(arquivo, posicao_data, SEEK_SET);
-
     get_ataques(dados_atributos, qntd_atributos, arquivo); // ok
   }
   if (entidades)
@@ -106,11 +106,13 @@ int main(int argc, char **argv)
   if (tamanho)
   {
     // Chamar a função de relatórios de tamanho;
-    get_tamanho(dados_atributos, qntd_atributos);
+    fseek(arquivo, posicao_data, SEEK_SET);
+    get_tamanho(dados_atributos, qntd_atributos, arquivo);
   }
   if (firewall)
   {
     // Chamar a função de geração de arquivo de firewall.
+    fseek(arquivo, posicao_data, SEEK_SET);
     get_firewall(dados_atributos, qntd_atributos);
   }
 
