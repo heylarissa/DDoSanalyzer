@@ -6,9 +6,9 @@
 typedef struct
 {
     int ocorrencias;
-    char *nome_ataque;
+    char *nome;
 
-} ataque;
+} log;
 
 #define ATAQUES_FILE "R_ATAQUES.txt"
 void get_ataques(atributo *dados, int quantidade, FILE *arquivo);

@@ -19,26 +19,26 @@ int busca_id_atributo(atributo *dados, int quantidade, char *atributo)
     exit(EXIT_FAILURE);
 }
 
-ataque *set_ataques(atributo elemento)
+log *set_ataques(atributo elemento)
 {
     /* Inicializa o relatório de ataques */
-    ataque *ataques_possiveis;
-    ataques_possiveis = malloc((elemento.size_categorias) * sizeof(ataque));
+    log *ataques_possiveis;
+    ataques_possiveis = malloc((elemento.size_categorias) * sizeof(log));
 
     for (int i = 0; i < elemento.size_categorias; i++)
     {
-        ataques_possiveis[i].nome_ataque = elemento.categorias[i];
+        ataques_possiveis[i].nome = elemento.categorias[i];
         ataques_possiveis[i].ocorrencias = 0;
     }
 
     return ataques_possiveis;
 }
 
-int get_id_ataque(ataque *ataques, char *token, int quantidade)
+int get_id_ataque(log *ataques, char *token, int quantidade)
 {
     for (int i = 0; i < quantidade; i++)
     {
-        if (strcmp(token, ataques[i].nome_ataque) == 0)
+        if (strcmp(token, ataques[i].nome) == 0)
         {
             return i;
         }
@@ -57,7 +57,7 @@ void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
     Etapa 3: Quando achar, busca na lista de ataques e soma 1 a ocorrências
     */
 
-    ataque *ataques;
+    log *ataques;
     FILE *output;
     output = fopen(ATAQUES_FILE, "w");
 
@@ -94,12 +94,12 @@ void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
 
     for (int k = 0; k < size_ataques; k++)
     {
-        if (strcmp(ataques[k].nome_ataque, "Normal") != 0)
+        if (strcmp(ataques[k].nome, "Normal") != 0)
         {
-            printf("Ataque: %s\nOcorrencias: %d\n\n", ataques[k].nome_ataque, ataques[k].ocorrencias);
+            printf("Ataque: %s\nOcorrencias: %d\n\n", ataques[k].nome, ataques[k].ocorrencias);
             char *escrita;
             char ocorrencias[LINESIZE + 1];
-            escrita = strcat(ataques[k].nome_ataque, ";");
+            escrita = strcat(ataques[k].nome, ";");
             sprintf(ocorrencias, "%d", ataques[k].ocorrencias);
 
             escrita = strcat(escrita, ocorrencias);
