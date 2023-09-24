@@ -59,7 +59,6 @@ void write_log_entidades(log *data, int data_size, char *filename)
         {
             printf("SRC_ADD: %s\nOcorrencias: %d\n\n", data[k].nome, data[k].ocorrencias);
             char *escrita;
-            char ocorrencias[LINESIZE + 1];
             escrita = strcat(data[k].nome, ";");
 
             if (data[k].ocorrencias <= 5)
