@@ -90,7 +90,7 @@ int main(int argc, char **argv)
   if (entidades)
   {
     // Chamar a função de relatórios de entidade;
-    get_entidades(dados_atributos, qntd_atributos);
+    get_entidades(dados_atributos, qntd_atributos, arquivo);
   }
   if (tamanho)
   {
@@ -103,6 +103,6 @@ int main(int argc, char **argv)
     get_firewall(dados_atributos, qntd_atributos);
   }
 
-  fclose (arquivo);
+  fclose(arquivo);
   return 0;
 }
