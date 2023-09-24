@@ -70,7 +70,8 @@ void write_log_entidades(log *data, int data_size, char *filename)
             {
                 strcat(escrita, "maliciosa");
             }
-            else {
+            else
+            {
                 strcat(escrita, "benigna");
             }
             escrita = strcat(escrita, "\n");
@@ -134,7 +135,7 @@ void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
     }
 
     fclose(output);
-    }
+}
 
 void get_entidades(atributo *dados, int quantidade, FILE *arquivo)
 {
