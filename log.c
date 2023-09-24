@@ -48,6 +48,36 @@ int get_id_ataque(log *ataques, char *token, int quantidade)
     exit(EXIT_FAILURE);
 }
 
+void write_log_entidades(log *data, int data_size, char *filename)
+{
+    FILE *output;
+    output = fopen(filename, "w");
+
+    for (int k = 0; k < data_size; k++)
+    {
+        if (strcmp(data[k].nome, "Normal") != 0)
+        {
+            printf("SRC_ADD: %s\nOcorrencias: %d\n\n", data[k].nome, data[k].ocorrencias);
+            char *escrita;
+            char ocorrencias[LINESIZE + 1];
+            escrita = strcat(data[k].nome, ";");
+
+            if (data[k].ocorrencias <= 5)
+            {
+                strcat(escrita, "potencialmente maliciosa");
+            }
+            else if (data[k].ocorrencias > 5)
+            {
+                strcat(escrita, "maliciosa");
+            }
+            escrita = strcat(escrita, "\n");
+
+            fputs(escrita, output);
+        }
+    }
+
+    fclose(output);
+}
 /* Gera o relatório de ataque (nome_do_ataque; numero_de_ocorrências) */
 void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
 {
@@ -89,7 +119,6 @@ void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
             token = strtok(NULL, ",");
         }
     }
-
     for (int k = 0; k < size_ataques; k++)
     {
         if (strcmp(ataques[k].nome, "Normal") != 0)
@@ -108,7 +137,7 @@ void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
     }
 
     fclose(output);
-}
+    }
 
 void get_entidades(atributo *dados, int quantidade, FILE *arquivo)
 {
@@ -169,10 +198,9 @@ void get_entidades(atributo *dados, int quantidade, FILE *arquivo)
         }
         // printf("src %s ocorrencias %d\n", entidades[w].nome, entidades[w].ocorrencias);
     }
-    for (int k = 0; k < entidades_tam; k++)
-    {
-        printf("src: %s pos: %d ocorr: %d\n", entidades[k].nome, k, entidades[k].ocorrencias);
-    }
+
+    // escreve entidades
+    write_log_entidades(entidades, entidades_tam, ENTIDADES_FILE);
 }
 
 void get_tamanho(atributo *dados, int quantidade) {}
