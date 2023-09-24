@@ -66,7 +66,7 @@ void processa_categorias(atributo *elemento, char *categorias)
   // com um vetor de strings
   elemento->size_categorias = 0;
 
-  int i, j = 0;
+  int i;
   categorias[strlen(categorias) - 2] = '\0';
   categorias++; // Avance além do '{'
   char *cat_copy = strdup(categorias);
