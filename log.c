@@ -147,6 +147,7 @@ void get_entidades(atributo *dados, int quantidade, FILE *arquivo)
 
     while (fgets(line, sizeof(line), arquivo) != NULL)
     {
+
         i = 0;
         token = strtok(line, ",");
         log novaEntidade;

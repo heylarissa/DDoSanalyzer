@@ -74,23 +74,34 @@ int main(int argc, char **argv)
 
   atributo *dados_atributos = processa_atributos(arquivo, qntd_atributos);
 
+  long posicao_data = ftell(arquivo); // armazena o ponteiro para a posição de @data
+  if (posicao_data == -1L)
+  {
+    perror("Erro ao obter a posição atual do ponteiro de arquivo");
+    fclose(arquivo);
+    return 1;
+  }
+
   if (exibicao)
   {
-    exibe_atributos(dados_atributos, qntd_atributos);
+    exibe_atributos(dados_atributos, qntd_atributos); // ok
   }
   if (validacao)
   {
-    valida_arff(arquivo, dados_atributos, qntd_atributos);
+    valida_arff(arquivo, dados_atributos, qntd_atributos); // semi ok
   }
   if (ataques)
   {
     // Chamar a função de relatórios de ataque;
-    get_ataques(dados_atributos, qntd_atributos, arquivo);
+    fseek(arquivo, posicao_data, SEEK_SET);
+
+    get_ataques(dados_atributos, qntd_atributos, arquivo); // ok
   }
   if (entidades)
   {
     // Chamar a função de relatórios de entidade;
-    get_entidades(dados_atributos, qntd_atributos, arquivo);
+    fseek(arquivo, posicao_data, SEEK_SET);
+    get_entidades(dados_atributos, qntd_atributos, arquivo); // ok
   }
   if (tamanho)
   {
