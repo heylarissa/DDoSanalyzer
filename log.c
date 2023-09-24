@@ -151,7 +151,7 @@ void get_entidades(atributo *dados, int quantidade, FILE *arquivo)
                 {
                     entidades[k].ocorrencias = entidades[k].ocorrencias + novaEntidade.ocorrencias;
                     exist = TRUE;
-                    printf("src: %s pos: %d ocorr: %d\n", entidades[k].nome, k, entidades[k].ocorrencias);
+                    break;
                 }
             }
             if (exist == FALSE)
