@@ -5,8 +5,8 @@
 
 typedef struct
 {
-    int ocorrencia;
-    char nome_ataque;
+    int ocorrencias;
+    char *nome_ataque;
 
 } ataque;
 
