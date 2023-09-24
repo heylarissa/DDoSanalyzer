@@ -86,8 +86,6 @@ void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
                 ataques[id_ataque].ocorrencias++;
             }
             i++;
-            if (i == 50)
-                break;
             token = strtok(NULL, ",");
         }
     }
@@ -112,6 +110,70 @@ void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
     fclose(output);
 }
 
-void get_entidades(atributo *dados, int quantidade, FILE *arquivo) {}
+void get_entidades(atributo *dados, int quantidade, FILE *arquivo)
+{
+    log *entidades = malloc(sizeof(log));
+    char line[LINESIZE + 1], *token;
+    int i, entidades_tam = 0;
+
+    int id_pkt_class = busca_id_atributo(dados, quantidade, "PKT_CLASS");
+    int id_src_add = busca_id_atributo(dados, quantidade, "SRC_ADD");
+
+    while (fgets(line, sizeof(line), arquivo) != NULL)
+    {
+        i = 0;
+        token = strtok(line, ",");
+        log novaEntidade;
+        novaEntidade.ocorrencias = 0;
+
+        while (token != NULL)
+        {
+            if (i == id_pkt_class && strcmp(token, "Normal\n") != 0) // se for malicioso
+            {
+                // coluna do pkt_class
+                novaEntidade.ocorrencias++;
+            }
+            else if (i == id_src_add)
+            {
+                // coluna do src_add
+                novaEntidade.nome = strdup(token);
+            }
+            i++;
+            token = strtok(NULL, ",");
+        }
+
+        if (entidades_tam > 0) // busca elemento e soma as ocorrencias
+        {
+            int exist = FALSE;
+            for (int k = 0; k < entidades_tam; k++)
+            {
+                if (strcmp(entidades[k].nome, novaEntidade.nome) == 0)
+                {
+                    entidades[k].ocorrencias = entidades[k].ocorrencias + novaEntidade.ocorrencias;
+                    exist = TRUE;
+                    printf("src: %s pos: %d ocorr: %d\n", entidades[k].nome, k, entidades[k].ocorrencias);
+                }
+            }
+            if (exist == FALSE)
+            {
+                entidades_tam += 1;
+                entidades = realloc(entidades, entidades_tam * sizeof(log));
+                entidades[entidades_tam - 1] = novaEntidade;
+            }
+        }
+        else // adiciona elemento
+        {
+            entidades_tam += 1;
+            entidades = realloc(entidades, entidades_tam * sizeof(log));
+            entidades[entidades_tam - 1] = novaEntidade;
+        }
+        // printf("src %s ocorrencias %d\n", entidades[w].nome, entidades[w].ocorrencias);
+    }
+    for (int k = 0; k < entidades_tam; k++)
+    {
+        printf("src: %s pos: %d ocorr: %d\n", entidades[k].nome, k, entidades[k].ocorrencias);
+    }
+}
+
 void get_tamanho(atributo *dados, int quantidade) {}
 void get_firewall(atributo *dados, int quantidade) {}
