@@ -10,6 +10,7 @@ typedef struct
 
 } ataque;
 
+#define ATAQUES_FILE "R_ATAQUES.txt"
 void get_ataques(atributo *dados, int quantidade, FILE *arquivo);
 void get_entidades(atributo *dados, int quantidade);
 void get_tamanho(atributo *dados, int quantidade);

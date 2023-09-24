@@ -102,5 +102,7 @@ int main(int argc, char **argv)
     // Chamar a função de geração de arquivo de firewall.
     get_firewall(dados_atributos, qntd_atributos);
   }
+
+  fclose (arquivo);
   return 0;
 }

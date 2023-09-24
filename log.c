@@ -29,10 +29,23 @@ ataque *set_ataques(atributo elemento)
     {
         ataques_possiveis[i].nome_ataque = elemento.categorias[i];
         ataques_possiveis[i].ocorrencias = 0;
-        printf("%s\n", ataques_possiveis[i].nome_ataque);
     }
 
     return ataques_possiveis;
+}
+
+int get_id_ataque(ataque *ataques, char *token, int quantidade)
+{
+    for (int i = 0; i < quantidade; i++)
+    {
+        if (strcmp(token, ataques[i].nome_ataque) == 0)
+        {
+            return i;
+        }
+    }
+
+    fprintf(stderr, "O ataque %s não existe na definição dos atributos. Não foi possível continuar o relatório.\n", token);
+    exit(EXIT_FAILURE);
 }
 
 /* Gera o relatório de ataque (nome_do_ataque; numero_de_ocorrências) */
@@ -45,12 +58,17 @@ void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
     */
 
     ataque *ataques;
+    FILE *output;
+    output = fopen(ATAQUES_FILE, "w");
+
+    int size_ataques;
 
     char line[LINESIZE + 1];
     char *token;
 
     int id_atributo = busca_id_atributo(dados, quantidade, "PKT_CLASS");
     ataques = set_ataques(dados[id_atributo]);
+    size_ataques = dados[id_atributo].size_categorias;
 
     int i;
 
@@ -60,14 +78,38 @@ void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
         token = strtok(line, ",");
         while (token != NULL)
         {
-            if (i == id_atributo && strcmp(token, "Normal\n") != 0)
+            token[strlen(token) - 1] = '\0'; // remove \n do final do token
+
+            if (i == id_atributo && strcmp(token, "Normal") != 0)
             {
-                
+                int id_ataque = get_id_ataque(ataques, token, size_ataques);
+                ataques[id_ataque].ocorrencias++;
             }
             i++;
+            if (i == 50)
+                break;
             token = strtok(NULL, ",");
         }
     }
+
+    for (int k = 0; k < size_ataques; k++)
+    {
+        if (strcmp(ataques[k].nome_ataque, "Normal") != 0)
+        {
+            printf("Ataque: %s\nOcorrencias: %d\n\n", ataques[k].nome_ataque, ataques[k].ocorrencias);
+            char *escrita;
+            char ocorrencias[LINESIZE + 1];
+            escrita = strcat(ataques[k].nome_ataque, ";");
+            sprintf(ocorrencias, "%d", ataques[k].ocorrencias);
+
+            escrita = strcat(escrita, ocorrencias);
+            escrita = strcat(escrita, "\n");
+
+            fputs(escrita, output);
+        }
+    }
+
+    fclose(output);
 }
 
 void get_entidades(atributo *dados, int quantidade) {}
