@@ -12,6 +12,7 @@ typedef struct
   int size_categorias;
 } atributo;
 
+int linhaEstaEmBranco(const char *linha);
 void exibe_atributos(atributo *infos, int quantidade);
 int conta_atributos(FILE *arff);
 void processa_categorias(atributo *elemento, char *categorias);

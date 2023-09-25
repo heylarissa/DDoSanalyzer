@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/a.out",
-            "args": ["-i", "netlog.arff", "-p"],
+            "args": ["-i", "netlog.arff", "-c"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

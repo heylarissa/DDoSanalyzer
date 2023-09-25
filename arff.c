@@ -2,8 +2,23 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 
+#include "log.h"
 #include "arff.h"
+
+int linhaEstaEmBranco(const char *linha)
+{
+  while (*linha)
+  {
+    if (!isspace(*linha))
+    {
+      return FALSE; // O caractere não é espaço em branco
+    }
+    linha++;
+  }
+  return TRUE; // Todos os caracteres são espaços em branco ou caracteres de nova linha
+}
 
 void exibe_atributos(atributo *infos, int quantidade)
 {
@@ -105,6 +120,11 @@ atributo *processa_atributos(FILE *arff, int quantidade)
 
   while (fgets(line, sizeof(line), arff) != NULL)
   {
+    if (linhaEstaEmBranco(line))
+    {
+      continue;
+    }
+
     if (strstr(line, "@attribute") == line)
     {
       atributo novoAtributo;
@@ -150,11 +170,14 @@ void valida_arff(FILE *arff, atributo *atributos, int quantidade)
 
   while (fgets(line, sizeof(line), arff) != NULL)
   {
+    if (linhaEstaEmBranco(line))
+    {
+      continue;
+    }
     elementos = 0;
     linhas++;
 
-    // Use strtok para dividir a string por vírgulas
-    token = strtok(line, ",");
+    token = strtok(line, ","); // separa a string
 
     while (token != NULL)
     {

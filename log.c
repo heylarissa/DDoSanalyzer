@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "arff.h"
 #include "log.h"
@@ -101,11 +102,15 @@ void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
 
     while (fgets(line, sizeof(line), arquivo) != NULL)
     {
+        if (linhaEstaEmBranco(line))
+        {
+            continue;
+        }
         i = 0;
         token = strtok(line, ",");
         while (token != NULL)
         {
-            token[strlen(token) - 1] = '\0'; // remove \n do final do token
+            token[strlen(token) - 1] = '\0'; // MUDAR remove \n do final do token
 
             if (i == id_atributo && strcmp(token, "Normal") != 0)
             {
@@ -147,7 +152,10 @@ void get_entidades(atributo *dados, int quantidade, FILE *arquivo)
 
     while (fgets(line, sizeof(line), arquivo) != NULL)
     {
-
+        if (linhaEstaEmBranco(line))
+        {
+            continue;
+        }
         i = 0;
         token = strtok(line, ",");
         log novaEntidade;
@@ -200,7 +208,90 @@ void get_entidades(atributo *dados, int quantidade, FILE *arquivo)
     write_log_entidades(entidades, entidades_tam, ENTIDADES_FILE);
 }
 
-void get_tamanho(atributo *dados, int quantidade, FILE *arquivo) {
-    
+log_size_avg *set_ataques_log_size(atributo elemento)
+{
+
+    log_size_avg *ataques;
+
+    ataques = malloc((elemento.size_categorias) * sizeof(log_size_avg));
+
+    for (int i = 0; i < elemento.size_categorias; i++)
+    {
+        ataques[i].log_info.nome = elemento.categorias[i];
+        ataques[i].log_info.ocorrencias = 0;
+        ataques[i].sum_size = 0;
+    }
+
+    return ataques;
 }
-void get_firewall(atributo *dados, int quantidade) {}
+void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
+{
+
+    char line[LINESIZE + 1];
+    char *token;
+    int col;
+
+    int id_pkt = busca_id_atributo(dados, quantidade, "PKT_CLASS");
+    int id_avg_size = busca_id_atributo(dados, quantidade, "PKT_AVG_SIZE");
+
+    log_size_avg *ataques = malloc(sizeof(log_size_avg));
+    ataques = set_ataques_log_size(dados[id_pkt]);
+    int ataques_size = dados[id_pkt].size_categorias;
+
+    while (fgets(line, sizeof(line), arquivo) != NULL)
+    {
+        if (linhaEstaEmBranco(line))
+        {
+            continue;
+        }
+
+        col = 0;
+        token = strtok(line, ",");
+
+        log_size_avg novoLog;
+        novoLog.log_info.ocorrencias = 0;
+
+        while (token != NULL)
+        {
+            token[strlen(token) - 1] = '\0'; // remove \n do final do token
+
+            if (col == id_pkt)
+            {
+                novoLog.log_info.nome = strdup(token);
+                novoLog.log_info.ocorrencias++;
+            }
+            else if (col == id_avg_size)
+            {
+                novoLog.sum_size = atoi(strdup(token));
+            }
+            col++;
+            token = strtok(NULL, ",");
+        }
+        // adiciona o ataque ao vetor ou soma a um ja existente
+        for (int k = 0; k < ataques_size; k++)
+        {
+
+            if (strcmp(ataques[k].log_info.nome, novoLog.log_info.nome) == 0)
+            {
+
+                ataques[k].log_info.ocorrencias = ataques[k].log_info.ocorrencias + novoLog.log_info.ocorrencias;
+                ataques[k].sum_size = ataques[k].sum_size + novoLog.sum_size;
+                // printf("%s  ocorreu %d  size %d\n", ataques[k].log_info.nome, ataques[k].log_info.ocorrencias, ataques[k].sum_size);
+
+                break;
+            }
+        }
+
+        // soma pkt_size no vetor
+        // break;
+    }
+    for (int k = 0; k < ataques_size; k++)
+    {
+        printf(" NOME: %s  OCORRENCIA: %d  SIZE: %d\n", ataques[k].log_info.nome, ataques[k].log_info.ocorrencias, ataques[k].sum_size);
+    }
+}
+
+void get_firewall(atributo *dados, int quantidade)
+{
+    // lê R_ENTIDADES.txt e pega os endereços considerados MALICIOSOS
+}
