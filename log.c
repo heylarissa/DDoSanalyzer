@@ -301,7 +301,21 @@ void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
     write_size_file(ataques, ataques_size, TAMANHOS_FILE);
 }
 
-void write_blacklist() {}
+void write_blacklist(char **sources, int size, char *filename)
+{
+    FILE *output;
+    output = fopen(filename, "w");
+    for (int n=0; n < size; n++)
+    {
+        char *escrita;
+        printf("%s\n", sources[n]);
+        escrita = strdup(sources[n]);
+        escrita = strcat(escrita, "\n");
+
+        fputs(escrita, output);
+    }
+    fclose(output);
+}
 
 void get_firewall(atributo *dados, int quantidade)
 {
@@ -338,7 +352,7 @@ void get_firewall(atributo *dados, int quantidade)
                     src_size++;
                     sources = realloc(sources, src_size * LINESIZE);
                     sources[src_size - 1] = strdup(src);
-                    printf("%s\n", sources[src_size - 1]);
+                    // printf("%s\n", sources[src_size - 1]);
                 }
             }
 
@@ -346,8 +360,6 @@ void get_firewall(atributo *dados, int quantidade)
             token = strtok(NULL, ";");
         }
     }
-
+    write_blacklist(sources, src_size, BLACKLIST);
     fclose(entidades);
-
-    write_blacklist();
 }
