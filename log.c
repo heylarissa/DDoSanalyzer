@@ -237,13 +237,11 @@ void write_size_file(log_size_avg *ataques, int ataques_size, char *filename)
         int avg_size = ataques[k].sum_size / ataques[k].log_info.ocorrencias;
         escrita = strcat(ataques[k].log_info.nome, ";");
         sprintf(num, "%d", avg_size);
-
         escrita = strcat(escrita, num);
         escrita = strcat(escrita, "\n");
         printf("%s", escrita);
 
         fputs(escrita, output);
-        // printf(" NOME: %s  OCORRENCIA: %d  SIZE: %d\n", ataques[k].log_info.nome, ataques[k].log_info.ocorrencias, ataques[k].sum_size);
     }
     fclose(output);
 }
