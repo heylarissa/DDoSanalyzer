@@ -6,7 +6,6 @@
 #include "arff.h"
 #include "log.h"
 
-/* Retorna o id/posição/coluna do atributo desejado */
 int busca_id_atributo(atributo *dados, int quantidade, char *atributo)
 {
     for (int i = 0; i < quantidade; i++)
@@ -83,7 +82,6 @@ void write_log_entidades(log *data, int data_size, char *filename)
     fclose(output);
 }
 
-/* Gera o relatório de ataque (nome_do_ataque; numero_de_ocorrências) */
 void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
 {
     log *ataques;
@@ -211,11 +209,10 @@ void get_entidades(atributo *dados, int quantidade, FILE *arquivo)
 
 log_size_avg *set_ataques_log_size(atributo elemento)
 {
-
     log_size_avg *ataques;
 
     ataques = malloc((elemento.size_categorias) * sizeof(log_size_avg));
-
+    // validar alocação
     for (int i = 0; i < elemento.size_categorias; i++)
     {
         ataques[i].log_info.nome = elemento.categorias[i];
@@ -230,6 +227,7 @@ void write_size_file(log_size_avg *ataques, int ataques_size, char *filename)
 {
     FILE *output;
     output = fopen(filename, "w");
+    // validar abertura do arquivo
 
     for (int k = 0; k < ataques_size; k++)
     {
@@ -245,9 +243,9 @@ void write_size_file(log_size_avg *ataques, int ataques_size, char *filename)
     }
     fclose(output);
 }
+
 void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
 {
-
     char line[LINESIZE + 1];
     char *token;
     int col;
@@ -303,7 +301,53 @@ void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
     write_size_file(ataques, ataques_size, TAMANHOS_FILE);
 }
 
+void write_blacklist() {}
+
 void get_firewall(atributo *dados, int quantidade)
 {
     // lê R_ENTIDADES.txt e pega os endereços considerados MALICIOSOS
+    char line[LINESIZE + 1],
+        *token,
+        **sources = (char **)malloc(sizeof(char *));
+    int src_size = 0;
+    FILE *entidades;
+    entidades = fopen(ENTIDADES_FILE, "r");
+
+    while (fgets(line, sizeof(line), entidades) != NULL)
+    {
+        if (linhaEstaEmBranco(line))
+            continue;
+
+        line[strlen(line) - 1] = '\0'; // remove \n do final da linha
+
+        token = strtok(line, ";");
+        int col = 0;
+        char *src;
+        char *classificacao;
+        while (token != NULL)
+        {
+            if (col == 0)
+            {
+                src = strdup(token);
+            }
+            else if (col == 1)
+            {
+                classificacao = strdup(token);
+                if (strcmp(classificacao, "maliciosa") == 0)
+                {
+                    src_size++;
+                    sources = realloc(sources, src_size * LINESIZE);
+                    sources[src_size - 1] = strdup(src);
+                    printf("%s\n", sources[src_size - 1]);
+                }
+            }
+
+            col++;
+            token = strtok(NULL, ";");
+        }
+    }
+
+    fclose(entidades);
+
+    write_blacklist();
 }
