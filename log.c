@@ -305,7 +305,7 @@ void write_blacklist(char **sources, int size, char *filename)
 {
     FILE *output;
     output = fopen(filename, "w");
-    for (int n=0; n < size; n++)
+    for (int n = 0; n < size; n++)
     {
         char *escrita;
         printf("%s\n", sources[n]);
