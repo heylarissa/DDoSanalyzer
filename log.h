@@ -5,6 +5,7 @@
 
 #define ATAQUES_FILE "R_ATAQUES.txt"
 #define ENTIDADES_FILE "R_ENTIDADES.txt"
+#define TAMANHOS_FILE "R_TAMANHO.txt"
 
 #define TRUE 1
 #define FALSE 0

@@ -82,6 +82,7 @@ void write_log_entidades(log *data, int data_size, char *filename)
 
     fclose(output);
 }
+
 /* Gera o relatório de ataque (nome_do_ataque; numero_de_ocorrências) */
 void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
 {
@@ -107,11 +108,11 @@ void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
             continue;
         }
         i = 0;
+        line[strlen(line) - 1] = '\0'; // remove \n do final do token
+
         token = strtok(line, ",");
         while (token != NULL)
         {
-            token[strlen(token) - 1] = '\0'; // MUDAR remove \n do final do token
-
             if (i == id_atributo && strcmp(token, "Normal") != 0)
             {
                 int id_ataque = get_id_ataque(ataques, token, size_ataques);
@@ -224,6 +225,28 @@ log_size_avg *set_ataques_log_size(atributo elemento)
 
     return ataques;
 }
+
+void write_size_file(log_size_avg *ataques, int ataques_size, char *filename)
+{
+    FILE *output;
+    output = fopen(filename, "w");
+
+    for (int k = 0; k < ataques_size; k++)
+    {
+        char *escrita, num[LINESIZE + 1];
+        int avg_size = ataques[k].sum_size / ataques[k].log_info.ocorrencias;
+        escrita = strcat(ataques[k].log_info.nome, ";");
+        sprintf(num, "%d", avg_size);
+
+        escrita = strcat(escrita, num);
+        escrita = strcat(escrita, "\n");
+        printf("%s", escrita);
+
+        fputs(escrita, output);
+        // printf(" NOME: %s  OCORRENCIA: %d  SIZE: %d\n", ataques[k].log_info.nome, ataques[k].log_info.ocorrencias, ataques[k].sum_size);
+    }
+    fclose(output);
+}
 void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
 {
 
@@ -246,6 +269,8 @@ void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
         }
 
         col = 0;
+        line[strlen(line) - 1] = '\0'; // remove \n do final do token
+
         token = strtok(line, ",");
 
         log_size_avg novoLog;
@@ -253,7 +278,6 @@ void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
 
         while (token != NULL)
         {
-            token[strlen(token) - 1] = '\0'; // remove \n do final do token
 
             if (col == id_pkt)
             {
@@ -270,25 +294,15 @@ void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
         // adiciona o ataque ao vetor ou soma a um ja existente
         for (int k = 0; k < ataques_size; k++)
         {
-
             if (strcmp(ataques[k].log_info.nome, novoLog.log_info.nome) == 0)
             {
-
                 ataques[k].log_info.ocorrencias = ataques[k].log_info.ocorrencias + novoLog.log_info.ocorrencias;
                 ataques[k].sum_size = ataques[k].sum_size + novoLog.sum_size;
-                // printf("%s  ocorreu %d  size %d\n", ataques[k].log_info.nome, ataques[k].log_info.ocorrencias, ataques[k].sum_size);
-
                 break;
             }
         }
-
-        // soma pkt_size no vetor
-        // break;
     }
-    for (int k = 0; k < ataques_size; k++)
-    {
-        printf(" NOME: %s  OCORRENCIA: %d  SIZE: %d\n", ataques[k].log_info.nome, ataques[k].log_info.ocorrencias, ataques[k].sum_size);
-    }
+    write_size_file(ataques, ataques_size, TAMANHOS_FILE);
 }
 
 void get_firewall(atributo *dados, int quantidade)
