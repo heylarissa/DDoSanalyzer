@@ -25,9 +25,15 @@ log *set_ataques(atributo elemento)
     log *ataques_possiveis;
     ataques_possiveis = malloc((elemento.size_categorias) * sizeof(log));
 
+    if (ataques_possiveis == NULL)
+    {
+        perror("Erro ao alocar memória para ataques_possiveis");
+        exit(1);
+    }
+
     for (int i = 0; i < elemento.size_categorias; i++)
     {
-        ataques_possiveis[i].nome = elemento.categorias[i];
+        ataques_possiveis[i].nome = strdup(elemento.categorias[i]);
         ataques_possiveis[i].ocorrencias = 0;
     }
 
@@ -85,8 +91,6 @@ void write_log_entidades(log *data, int data_size, char *filename)
 void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
 {
     log *ataques;
-    FILE *output;
-    output = fopen(ATAQUES_FILE, "w");
 
     int size_ataques;
 
@@ -120,24 +124,42 @@ void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
             token = strtok(NULL, ",");
         }
     }
+
+    FILE *output;
+    output = fopen(ATAQUES_FILE, "w+");
+
     for (int k = 0; k < size_ataques; k++)
     {
         if (strcmp(ataques[k].nome, "Normal") != 0)
         {
-            printf("Ataque: %s\nOcorrencias: %d\n\n", ataques[k].nome, ataques[k].ocorrencias);
-            char *escrita;
             char ocorrencias[LINESIZE + 1];
-            escrita = strcat(ataques[k].nome, ";");
             sprintf(ocorrencias, "%d", ataques[k].ocorrencias);
 
-            escrita = strcat(escrita, ocorrencias);
-            escrita = strcat(escrita, "\n");
+            int tamanho_escrita = snprintf(NULL, 0, "%s;%s\n", ataques[k].nome, ocorrencias) + 1;
+
+            char *escrita = malloc(tamanho_escrita);
+            if (escrita == NULL)
+            {
+                perror("Erro ao alocar memória para escrita");
+                exit(1);
+            }
+
+            snprintf(escrita, tamanho_escrita, "%s;%s\n", ataques[k].nome, ocorrencias);
 
             fputs(escrita, output);
+
+            free(escrita);
         }
     }
     fclose(output);
-    free(ataques);
+    if (ataques != NULL)
+    {
+        for (int i = 0; i < size_ataques; i++)
+        {
+            free(ataques[i].nome);
+        }
+        free(ataques);
+    }
 }
 
 void get_entidades(atributo *dados, int quantidade, FILE *arquivo)

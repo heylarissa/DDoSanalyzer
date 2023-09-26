@@ -117,7 +117,7 @@ void processa_categorias(atributo *elemento, char *categorias)
 
   token = strtok(cat_copy, ",");
   i = 0;
-  elemento->categorias = (char **)malloc((num_elementos + 1) * sizeof(char *));
+  elemento->categorias = malloc((num_elementos + 1) * sizeof(char *));
   elemento->size_categorias = num_elementos;
 
   while (token != NULL)
