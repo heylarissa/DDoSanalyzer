@@ -136,7 +136,6 @@ void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
             fputs(escrita, output);
         }
     }
-
     fclose(output);
 }
 
@@ -352,7 +351,6 @@ void get_firewall(atributo *dados, int quantidade)
                     src_size++;
                     sources = realloc(sources, src_size * LINESIZE);
                     sources[src_size - 1] = strdup(src);
-                    // printf("%s\n", sources[src_size - 1]);
                 }
             }
 

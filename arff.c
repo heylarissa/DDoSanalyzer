@@ -56,14 +56,34 @@ void exibe_atributos(atributo *infos, int quantidade)
 
 int conta_atributos(FILE *arff)
 {
+  // tratamento de exceção: 1) ter só 2 campos na linha de atributo
   // Função do A1
-  char line[LINESIZE];
+  char line[LINESIZE + 1];
   int attributeCount = 0;
 
   while (fgets(line, sizeof(line), arff) != NULL)
   {
     if (strstr(line, "@attribute") == line)
     {
+      char *token;
+      int contador_palavras = 0;
+
+      // Primeira chamada ao strtok
+      token = strtok(line, " ");
+
+      // Subsequentemente, use NULL como primeiro argumento para continuar a dividir
+      while (token != NULL)
+      {
+        contador_palavras++;
+        token = strtok(NULL, " ");
+      }
+
+      if (contador_palavras != 3)
+      {
+        fprintf(stderr, "Arquivo mal formado! A linha de atributos não possui o número adequado de elementos\n");
+        exit(EXIT_FAILURE);
+      }
+
       attributeCount++;
     }
     else if (strstr(line, "@data") != NULL)
@@ -107,6 +127,7 @@ void processa_categorias(atributo *elemento, char *categorias)
     token = strtok(NULL, ",");
     i++;
   }
+
 }
 
 atributo *processa_atributos(FILE *arff, int quantidade)
@@ -128,8 +149,7 @@ atributo *processa_atributos(FILE *arff, int quantidade)
     if (strstr(line, "@attribute") == line)
     {
       atributo novoAtributo;
-      char *token = strtok(line, " ");
-      token = strtok(NULL, " ");           // Pula o "@attribute"
+      char *token = strtok(line, " ");     // Pula o "@attribute"
       novoAtributo.rotulo = strdup(token); // Copia o rótulo
       token = strtok(NULL, " ");           // Pega o nome
 
@@ -137,7 +157,9 @@ atributo *processa_atributos(FILE *arff, int quantidade)
       {
         novoAtributo.tipo = strdup("categoric\n");
         processa_categorias(&novoAtributo, token);
+        
       }
+
       else
       {
         novoAtributo.categorias = NULL;
