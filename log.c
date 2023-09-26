@@ -137,6 +137,7 @@ void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
         }
     }
     fclose(output);
+    free(ataques);
 }
 
 void get_entidades(atributo *dados, int quantidade, FILE *arquivo)
@@ -204,6 +205,7 @@ void get_entidades(atributo *dados, int quantidade, FILE *arquivo)
 
     // escreve entidades
     write_log_entidades(entidades, entidades_tam, ENTIDADES_FILE);
+    free(entidades);
 }
 
 log_size_avg *set_ataques_log_size(atributo elemento)
@@ -252,7 +254,7 @@ void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
     int id_pkt = busca_id_atributo(dados, quantidade, "PKT_CLASS");
     int id_avg_size = busca_id_atributo(dados, quantidade, "PKT_AVG_SIZE");
 
-    log_size_avg *ataques = malloc(sizeof(log_size_avg));
+    log_size_avg *ataques;
     ataques = set_ataques_log_size(dados[id_pkt]);
     int ataques_size = dados[id_pkt].size_categorias;
 
@@ -269,6 +271,7 @@ void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
         token = strtok(line, ",");
 
         log_size_avg novoLog;
+        novoLog.log_info.nome = NULL;
         novoLog.log_info.ocorrencias = 0;
 
         while (token != NULL)
@@ -276,12 +279,12 @@ void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
 
             if (col == id_pkt)
             {
-                novoLog.log_info.nome = strdup(token);
+                strcpy(novoLog.log_info.nome, token);
                 novoLog.log_info.ocorrencias++;
             }
             else if (col == id_avg_size)
             {
-                novoLog.sum_size = atoi(strdup(token));
+                novoLog.sum_size = atoi(token);
             }
             col++;
             token = strtok(NULL, ",");
@@ -298,6 +301,14 @@ void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
         }
     }
     write_size_file(ataques, ataques_size, TAMANHOS_FILE);
+    // Libere a memória alocada para os nomes
+    for (int i = 0; i < ataques_size; i++)
+    {
+        free(ataques[i].log_info.nome);
+    }
+
+    // Libere a memória alocada para o vetor 'ataques'
+    free(ataques);
 }
 
 void write_blacklist(char **sources, int size, char *filename)

@@ -117,5 +117,22 @@ int main(int argc, char **argv)
   }
 
   fclose(arquivo);
+  for (int i = 0; i < qntd_atributos; i++)
+  {
+    free(dados_atributos[i].rotulo);
+    free(dados_atributos[i].tipo);
+    // Liberar memória alocada para categorias, se aplicável
+    if (dados_atributos[i].categorias != NULL)
+    {
+      for (int j = 0; j < dados_atributos[i].size_categorias; j++)
+      {
+        free(dados_atributos[i].categorias[j]);
+      }
+      free(dados_atributos[i].categorias);
+    }
+  }
+  free(dados_atributos);
+
+  free(entrada);
   return 0;
 }

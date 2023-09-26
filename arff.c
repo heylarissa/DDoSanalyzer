@@ -127,15 +127,15 @@ void processa_categorias(atributo *elemento, char *categorias)
     token = strtok(NULL, ",");
     i++;
   }
-
+  free(cat_copy);
 }
 
 atributo *processa_atributos(FILE *arff, int quantidade)
 {
   // Função do A1 (com modificações para o atributo de categorias)
 
-  char line[LINESIZE + 1];    // Tamanho da linha arbitrário
-  atributo *atributos = NULL; // vetor
+  char line[LINESIZE + 1];
+  atributo *atributos = NULL;
   int numAtributos = 0;
   rewind(arff);
 
@@ -149,7 +149,7 @@ atributo *processa_atributos(FILE *arff, int quantidade)
     if (strstr(line, "@attribute") == line)
     {
       atributo novoAtributo;
-      char *token = strtok(line, " "); 
+      char *token = strtok(line, " ");
       token = strtok(NULL, " ");           // Pula o "@attribute"
       novoAtributo.rotulo = strdup(token); // Copia o rótulo
       token = strtok(NULL, " ");           // Pega o nome
@@ -158,7 +158,6 @@ atributo *processa_atributos(FILE *arff, int quantidade)
       {
         novoAtributo.tipo = strdup("categoric\n");
         processa_categorias(&novoAtributo, token);
-        
       }
 
       else
