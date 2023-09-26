@@ -149,7 +149,8 @@ atributo *processa_atributos(FILE *arff, int quantidade)
     if (strstr(line, "@attribute") == line)
     {
       atributo novoAtributo;
-      char *token = strtok(line, " ");     // Pula o "@attribute"
+      char *token = strtok(line, " "); 
+      token = strtok(NULL, " ");           // Pula o "@attribute"
       novoAtributo.rotulo = strdup(token); // Copia o rótulo
       token = strtok(NULL, " ");           // Pega o nome
 
