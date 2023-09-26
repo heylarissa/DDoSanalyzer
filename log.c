@@ -65,7 +65,12 @@ void write_log_entidades(log *data, int data_size, char *filename)
         {
             printf("SRC_ADD: %s\nOcorrências: %d\n\n", data[k].nome, data[k].ocorrencias);
             char *escrita;
-            escrita = strcat(data[k].nome, ";");
+
+            // Aloca memória para a string concatenada
+            escrita = malloc(strlen(data[k].nome) + 32); // +32 para acomodar os caracteres adicionais
+
+            strcpy(escrita, data[k].nome);
+            strcat(escrita, ";");
 
             if (data[k].ocorrencias <= 5)
             {
@@ -79,9 +84,12 @@ void write_log_entidades(log *data, int data_size, char *filename)
             {
                 strcat(escrita, "benigna");
             }
-            escrita = strcat(escrita, "\n");
+            strcat(escrita, "\n");
 
             fputs(escrita, output);
+
+            // Libera a memória alocada para data[k].nome
+            free(escrita);
         }
     }
 
@@ -164,7 +172,7 @@ void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
 
 void get_entidades(atributo *dados, int quantidade, FILE *arquivo)
 {
-    log *entidades = malloc(sizeof(log));
+    log *entidades = NULL;
     char line[LINESIZE + 1], *token;
     int i, entidades_tam = 0;
 
@@ -179,54 +187,52 @@ void get_entidades(atributo *dados, int quantidade, FILE *arquivo)
         }
         i = 0;
         token = strtok(line, ",");
-        log novaEntidade;
-        novaEntidade.ocorrencias = 0;
+        char *nome = NULL;
+        int ocorrencias = 0;
 
         while (token != NULL)
         {
             if (i == id_pkt_class && strcmp(token, "Normal\n") != 0) // se for malicioso
             {
                 // coluna do pkt_class
-                novaEntidade.ocorrencias++;
+                ocorrencias++;
             }
-            else if (i == id_src_add)
+            else if (i == id_src_add && nome == NULL)
             {
                 // coluna do src_add
-                novaEntidade.nome = strdup(token);
+                nome = strdup(token);
             }
             i++;
             token = strtok(NULL, ",");
         }
 
-        if (entidades_tam > 0) // busca elemento e soma as ocorrencias
+        int exist = FALSE;
+        for (int k = 0; k < entidades_tam; k++)
         {
-            int exist = FALSE;
-            for (int k = 0; k < entidades_tam; k++)
+            if ((nome != NULL) && strcmp(entidades[k].nome, nome) == 0)
             {
-                if (strcmp(entidades[k].nome, novaEntidade.nome) == 0)
-                {
-                    entidades[k].ocorrencias = entidades[k].ocorrencias + novaEntidade.ocorrencias;
-                    exist = TRUE;
-                    break;
-                }
-            }
-            if (exist == FALSE)
-            {
-                entidades_tam += 1;
-                entidades = realloc(entidades, entidades_tam * sizeof(log));
-                entidades[entidades_tam - 1] = novaEntidade;
+                entidades[k].ocorrencias = entidades[k].ocorrencias + ocorrencias;
+                exist = TRUE;
+                break;
             }
         }
-        else // adiciona elemento
+        if (exist == FALSE)
         {
             entidades_tam += 1;
             entidades = realloc(entidades, entidades_tam * sizeof(log));
-            entidades[entidades_tam - 1] = novaEntidade;
+            entidades[entidades_tam - 1].nome = strdup(nome);
+            entidades[entidades_tam - 1].ocorrencias = ocorrencias;
+            free(nome);
         }
     }
 
-    // escreve entidades
     write_log_entidades(entidades, entidades_tam, ENTIDADES_FILE);
+
+    for (int k = 0; k < entidades_tam; k++)
+    {
+        free(entidades[k].nome);
+    }
+
     free(entidades);
 }
 
@@ -354,11 +360,15 @@ void get_firewall(atributo *dados, int quantidade)
     // lê R_ENTIDADES.txt e pega os endereços considerados MALICIOSOS
     char line[LINESIZE + 1],
         *token,
-        **sources = (char **)malloc(sizeof(char *));
+        **sources = NULL;
     int src_size = 0;
     FILE *entidades;
     entidades = fopen(ENTIDADES_FILE, "r");
-
+    if (entidades == NULL)
+    {
+        perror("Erro ao abrir o arquivo de entidades");
+        exit(EXIT_FAILURE);
+    }
     while (fgets(line, sizeof(line), entidades) != NULL)
     {
         if (linhaEstaEmBranco(line))
@@ -393,4 +403,11 @@ void get_firewall(atributo *dados, int quantidade)
     }
     write_blacklist(sources, src_size, BLACKLIST);
     fclose(entidades);
+
+    for (int i = 0; i < src_size; i++)
+    {
+        free(sources[i]);
+    }
+    free(sources);
+    free(entidades);
 }

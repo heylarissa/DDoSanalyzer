@@ -77,9 +77,9 @@ int main(int argc, char **argv)
   long posicao_data = ftell(arquivo); // armazena o ponteiro para a posição de @data
   if (posicao_data == -1L)
   {
-    perror("Erro ao obter a posição atual do ponteiro de arquivo");
+    fprintf(stderr, "Erro ao obter a posição atual do ponteiro de arquivo\n");
     fclose(arquivo);
-    return 1;
+    return EXIT_FAILURE;
   }
 
   if (exibicao)
@@ -117,11 +117,13 @@ int main(int argc, char **argv)
   }
 
   fclose(arquivo);
+  
   for (int i = 0; i < qntd_atributos; i++)
   {
     free(dados_atributos[i].rotulo);
     free(dados_atributos[i].tipo);
-    // Liberar memória alocada para categorias, se aplicável
+
+    // Liberar memória alocada para categorias
     if (dados_atributos[i].categorias != NULL)
     {
       for (int j = 0; j < dados_atributos[i].size_categorias; j++)
