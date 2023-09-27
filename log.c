@@ -307,7 +307,7 @@ void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
 
             if (col == id_pkt)
             {
-                strcpy(novoLog.log_info.nome, token);
+                novoLog.log_info.nome = strdup(token);
                 novoLog.log_info.ocorrencias++;
             }
             else if (col == id_avg_size)
@@ -328,14 +328,9 @@ void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
             }
         }
     }
-    write_size_file(ataques, ataques_size, TAMANHOS_FILE);
-    // Libere a memória alocada para os nomes
-    for (int i = 0; i < ataques_size; i++)
-    {
-        free(ataques[i].log_info.nome);
-    }
 
-    // Libere a memória alocada para o vetor 'ataques'
+    write_size_file(ataques, ataques_size, TAMANHOS_FILE);
+
     free(ataques);
 }
 
