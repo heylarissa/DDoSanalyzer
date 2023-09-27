@@ -1,0 +1,4 @@
+@attribute Nome string
+@attribute Idade tESTE numeric
+@attribute Grau {BC,MC,Bacharel,Mestre,Doutor}
+@data
