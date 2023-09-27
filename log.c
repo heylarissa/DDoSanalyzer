@@ -153,9 +153,10 @@ void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
             }
 
             snprintf(escrita, tamanho_escrita, "%s;%s\n", ataques[k].nome, ocorrencias);
+            fprintf(stdin, "%s", escrita);
 
             fputs(escrita, output);
-
+            printf("%s", escrita);
             free(escrita);
         }
     }
@@ -278,7 +279,7 @@ void write_size_file(log_size_avg *ataques, int ataques_size, char *filename)
 
 void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
 {
-    char line[LINESIZE + 1];
+    char line[2 * LINESIZE + 1];
     char *token;
     int col;
 
