@@ -281,7 +281,7 @@ void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
     char line[LINESIZE + 1];
     char *token;
     int col;
-    printf("%p\n", arquivo);
+
     int id_pkt = busca_id_atributo(dados, quantidade, "PKT_CLASS");
     int id_avg_size = busca_id_atributo(dados, quantidade, "PKT_AVG_SIZE");
 
