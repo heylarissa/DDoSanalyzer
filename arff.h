@@ -18,5 +18,5 @@ int conta_atributos(FILE *arff);
 void processa_categorias(atributo *elemento, char *categorias);
 atributo *processa_atributos(FILE *arff, int quantidade);
 void valida_arff(FILE *arff, atributo *atributos, int quantidade);
-
+int dadosConsistentes(atributo *atributos, char line[], int qtd_atributos, int id_coluna, char *dado);
 #endif
