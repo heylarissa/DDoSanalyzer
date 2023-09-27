@@ -260,15 +260,18 @@ void write_size_file(log_size_avg *ataques, int ataques_size, char *filename)
 
     for (int k = 0; k < ataques_size; k++)
     {
-        char *escrita, num[LINESIZE + 1];
-        int avg_size = ataques[k].sum_size / ataques[k].log_info.ocorrencias;
-        escrita = strcat(ataques[k].log_info.nome, ";");
-        sprintf(num, "%d", avg_size);
-        escrita = strcat(escrita, num);
-        escrita = strcat(escrita, "\n");
-        printf("%s", escrita);
+        if (ataques[k].log_info.ocorrencias != 0)
+        {
+            char *escrita, num[LINESIZE + 1];
+            int avg_size = ataques[k].sum_size / ataques[k].log_info.ocorrencias;
+            escrita = strcat(ataques[k].log_info.nome, ";");
+            sprintf(num, "%d", avg_size);
+            escrita = strcat(escrita, num);
+            escrita = strcat(escrita, "\n");
+            printf("%s", escrita);
 
-        fputs(escrita, output);
+            fputs(escrita, output);
+        }
     }
     fclose(output);
 }
@@ -278,7 +281,7 @@ void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
     char line[LINESIZE + 1];
     char *token;
     int col;
-
+    printf("%p\n", arquivo);
     int id_pkt = busca_id_atributo(dados, quantidade, "PKT_CLASS");
     int id_avg_size = busca_id_atributo(dados, quantidade, "PKT_AVG_SIZE");
 
@@ -318,17 +321,23 @@ void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
             token = strtok(NULL, ",");
         }
         // adiciona o ataque ao vetor ou soma a um ja existente
-        for (int k = 0; k < ataques_size; k++)
+        if (novoLog.log_info.nome != NULL)
         {
-            if (strcmp(ataques[k].log_info.nome, novoLog.log_info.nome) == 0)
+            for (int k = 0; k < ataques_size; k++)
             {
-                ataques[k].log_info.ocorrencias = ataques[k].log_info.ocorrencias + novoLog.log_info.ocorrencias;
-                ataques[k].sum_size = ataques[k].sum_size + novoLog.sum_size;
-                break;
+                if (strcmp(ataques[k].log_info.nome, novoLog.log_info.nome) == 0)
+                {
+                    ataques[k].log_info.ocorrencias = ataques[k].log_info.ocorrencias + novoLog.log_info.ocorrencias;
+                    ataques[k].sum_size = ataques[k].sum_size + novoLog.sum_size;
+                    break;
+                }
             }
         }
+        else
+        {
+            fprintf(stderr, "Não há valores de dados no arquivo de entrada.\n");
+        }
     }
-
     write_size_file(ataques, ataques_size, TAMANHOS_FILE);
 
     free(ataques);
@@ -366,7 +375,6 @@ void get_firewall(atributo *dados, int quantidade)
     }
     while (fgets(line, sizeof(line), entidades) != NULL)
     {
-        printf("%ss", line);
         if (linhaEstaEmBranco(line))
             continue;
 
