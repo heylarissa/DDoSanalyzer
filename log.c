@@ -369,11 +369,13 @@ void get_firewall(atributo *dados, int quantidade)
     int src_size = 0;
     FILE *entidades;
     entidades = fopen(ENTIDADES_FILE, "r");
+
     if (entidades == NULL)
     {
         perror("Erro ao abrir o arquivo de entidades");
         exit(EXIT_FAILURE);
     }
+
     while (fgets(line, sizeof(line), entidades) != NULL)
     {
         if (linhaEstaEmBranco(line))
@@ -406,8 +408,8 @@ void get_firewall(atributo *dados, int quantidade)
             token = strtok(NULL, ";");
         }
     }
-    write_blacklist(sources, src_size, BLACKLIST);
     fclose(entidades);
+    write_blacklist(sources, src_size, BLACKLIST);
 
     free(sources);
 }
