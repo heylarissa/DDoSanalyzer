@@ -1,73 +1,67 @@
-# ARFF Reader
+# ARFF Network Log Analyzer
 
-Formato ARFF
+This project is an extension of the program developed during evaluation #1 and aims to analyze network log files formatted in ARFF. The program extracts statistics related to DDoS attacks from the network log and creates a blacklist of malicious addresses to feed an iptables firewall.
 
-Dividido em duas seções:
-- atributos (colunas) definidas no começo do arquivo (a linha inicia com @attribute)
-        - numeric, string, categórico {cat1, cat2, cat3}
-        @attribute Nome string
-        @attribute Idade numeric
-        @attribute Grau {BC,MC,Bacharel,Mestre,Doutor}
-- dados (@data)
+## Resources
 
-Linhas em branco antes dos atributos, entre atributos e entre um atributo e o 
-token @data devem ser ignoradas
+The following resources are essential for the development of this project:
 
-1. Abre um arquivo no formato ARFF
-2. Lê a sua seção de atributos
-3. Para cada atributo armazena o seu rótulo, tipo e categorias em uma estrutura 
-como a definida a seguir
+1. **netlog.arff**: This file contains an example of a network log in ARFF format, with attributes and data. The program should be able to process this file.
 
-typedef struct {
-    char *rotulo;
-    char *tipo;
-    char *categorias;
-} atributo;
+2. **main.c**: This is the main program file from which the main function should be developed.
 
-Se o tipo for númerico ou textual, em "tipo" deve constar, respectivamente "numeric" e 
-"string", em "categorias" deve existir zero (NULL);
-Se o tipo for categórico, em "tipo" deve constar "categoric" e em categorias deve constar 
-um vetor com todas as categorias.
+3. **arff.c/arff.h**: These files represent the ARFF file processing library. You can use the functions from evaluation #1 here and implement new functions as needed.
 
-Considere que:
-- Nenhuma linha de atributo terá mais do que 1024 caracteres;
-- Haverá exatamente um espaço entre um elemento e outro em uma linha de atributo;
-- Não haverão espaços no início e no final de uma linha de atributos;
-- Atributos categóricos terão seus valores sempre definidos corretamente
+4. **log.c/log.h**: These files are responsible for analyzing the validated ARFF network log file. They should implement various functionalities to generate reports and create a blacklist of malicious addresses.
 
-- Uma linha de atributo pode conter menos ou mais elementos, além dos necessários 
-(o programa deve tratar esse possível erro)
-- Uma linha de atributo não iniciada com "@atributte" deve ser indicada como erro.
+## Requirements
 
-# Avaliação 2
-ObjetivoS: 
-- Analisar e validar um arquivo no formato ARFF e usar esse
-analisador para extrair estatísticas relacionadas a ataques DDoS de um log de rede. 
-- Criar uma lista negra (blacklist) de endereços maliciosos para alimentar um
-firewall iptables
+The requirements for this project include:
 
-1. Realizar a modificação na estrutura de dados dos atributos ARFF. Agora, para atributos
-categórico, em vez de armazenar uma única string contendo todas as categorias (por
-exemplo, "{a, b, c}"), devemos armazenar um vetor de strings, com cada categoria
-separada (por exemplo, na primeira posição "a", na segunda "b" e na terceira "c"). 
-Essa separação deve ser feita por meio da função "processa_categorias" e deve ser
-chamada no contexto da função "processa_atributos" (observem que essa modificação
-terá impacto em outras funções, como "exibe_atributos").
+1. Modify the data structure of ARFF attributes to handle categorical attributes that are now stored as arrays of separate strings.
 
-2. Realizar a validação da seção de dados do arquivo ARFF. Ou seja, linha por linha do
-arquivo, é necessário verificar se a quantidade adequada de atributos existe e se cada
-um desses atributos apresenta um dado compatível com o tipo designado para ele na
-seção de definição dos atributos.
+2. Validate the data section of the ARFF file by checking the correct number of attributes and data compatibility with assigned types.
 
-3. Criar arquivos de código-fonte (log.c e log.h) para a análise de um arquivo de log de
-rede ARFF validado (podem usar o "netlog.arff" como referência). As seguintes
-funcionalidades devem ser implementadas e disponibilizadas nas respectivas seções da
-função principal (main.c):
-    a. Gerar um relatório de todos os ataques ocorridos e o número de ocorrências no
-    conjunto de dados (nome do arquivo de saída: "R_ATAQUES.txt");
-    b. Gerar um relatório dos endereços de origem maliciosos, potencialmente
-    maliciosos e benignos (nome do arquivo de saída: "R_ENTIDADES.txt");
-    c. Gerar um relatório com a média da média do tamanho dos pacotes para cada
-    tipo de ataque (nome do arquivo de saída: "R_TAMANHO.txt");
-    d. Gerar uma lista negra (blacklist) de endereços de origem considerados
-    maliciosos (nome do arquivo de saída: "BLACKLIST.bl").
+3. Create source code files (log.c and log.h) to analyze the validated ARFF network log file. Implement functionalities to:
+
+   - Generate a report of all attacks that occurred and their occurrence counts in the dataset.
+
+   - Generate a report of malicious, potentially malicious, and benign source addresses.
+
+   - Generate a report with the average of the average packet size for each type of attack.
+
+   - Generate a blacklist of source addresses considered malicious.
+
+## Report Formats
+
+The reports should follow these formats:
+
+- "R_ATAQUES.txt": Contains lines in the format "attack_name;occurrence_count" for attacks, excluding the "Normal" class.
+
+- "R_ENTIDADES.txt": Contains lines in the format "source_address;classification" for source addresses, classified as benign, potentially malicious, or malicious.
+
+- "R_TAMANHO.txt": Contains lines in the format "attack_name;average_average_size" for the average packet size in each type of attack.
+
+- "BLACKLIST.bl": Contains a list of source addresses considered malicious.
+
+## How to Run
+
+To compile and run the program, follow these steps:
+
+1. Open the terminal.
+
+2. Navigate to the project directory.
+
+3. Compile the source code using the Makefile by running the following command:
+```bash
+make
+```
+4. Tests  
+```python
+python3 Script.py log.c log.h main.c arff.c arff.h
+```
+
+5. Run  
+```bash
+./ddosanalyzer -i <inputfile>.arff [-p -v -a -b -c -d]
+```
