@@ -138,6 +138,7 @@ atributo *processa_atributos(FILE *arff, int quantidade)
   atributo *atributos = NULL;
   int numAtributos = 0;
   rewind(arff);
+  int data_exists = FALSE;
 
   while (fgets(line, sizeof(line), arff) != NULL)
   {
@@ -172,14 +173,20 @@ atributo *processa_atributos(FILE *arff, int quantidade)
     }
     else if (strstr(line, "@data") != NULL)
     {
+      data_exists = TRUE;
       break; // Sai do loop quando "@data" é encontrado
     }
-    else {
+    else
+    {
       fprintf(stderr, "Ops, essa linha não deveria conter a palavra @attribute?\n");
       exit(EXIT_FAILURE);
     }
   }
-
+  if (!data_exists)
+  {
+    fprintf(stderr, "Arquivo mal formado! Não existe @data!!!\n");
+    exit(EXIT_FAILURE);
+  }
   return atributos;
 }
 
@@ -203,6 +210,7 @@ int dadosConsistentes(atributo *atributos, char line[], int qtd_atributos, int i
   }
   else if (atributos[id_coluna].size_categorias > 0 && strcmp(atributos[id_coluna].tipo, "categoric\n") == 0)
   {
+    // verifica se o elemento existe em categorias do atributo
     for (int k = 0; k < atributos[id_coluna].size_categorias; k++)
     {
       if (strcmp(dado, atributos[id_coluna].categorias[k]) == 0)
@@ -261,4 +269,5 @@ void valida_arff(FILE *arff, atributo *atributos, int quantidade)
       exit(EXIT_FAILURE);
     }
   }
+  printf("--------------SUCCESS!--------------- \n");
 }
