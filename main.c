@@ -117,7 +117,7 @@ int main(int argc, char **argv)
   }
 
   fclose(arquivo);
-  
+
   for (int i = 0; i < qntd_atributos; i++)
   {
     free(dados_atributos[i].rotulo);
