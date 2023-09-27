@@ -169,15 +169,14 @@ atributo *processa_atributos(FILE *arff, int quantidade)
       numAtributos++;
       atributos = realloc(atributos, numAtributos * sizeof(atributo));
       atributos[numAtributos - 1] = novoAtributo;
-
-      // atributos[numAtributos - 1].rotulo = strdup(novoAtributo.rotulo);
-      // atributos[numAtributos - 1].tipo = strdup(novoAtributo.tipo);
-      // atributos[numAtributos - 1].categorias = novoAtributo.categorias;
-      // atributos[numAtributos - 1].size_categorias = novoAtributo.size_categorias;
     }
     else if (strstr(line, "@data") != NULL)
     {
       break; // Sai do loop quando "@data" é encontrado
+    }
+    else {
+      fprintf(stderr, "Ops, essa linha não deveria conter a palavra @attribute?\n");
+      exit(EXIT_FAILURE);
     }
   }
 
@@ -187,7 +186,6 @@ atributo *processa_atributos(FILE *arff, int quantidade)
 int dadosConsistentes(atributo *atributos, char line[], int qtd_atributos, int id_coluna, char *dado)
 {
   char *str;
-  printf("dado: %s  tipo: %s  size_cat: %d\n", dado, atributos[id_coluna].tipo, atributos[id_coluna].size_categorias);
   if (dado[strlen(dado) - 1] == '\n')
   {
     dado[strlen(dado) - 1] = '\0';
@@ -205,10 +203,8 @@ int dadosConsistentes(atributo *atributos, char line[], int qtd_atributos, int i
   }
   else if (atributos[id_coluna].size_categorias > 0 && strcmp(atributos[id_coluna].tipo, "categoric\n") == 0)
   {
-    printf("-------------------------------------------\n");
     for (int k = 0; k < atributos[id_coluna].size_categorias; k++)
     {
-      printf("categoria: %s\n", atributos[id_coluna].categorias[k]);
       if (strcmp(dado, atributos[id_coluna].categorias[k]) == 0)
       {
         return TRUE;
@@ -225,9 +221,6 @@ void valida_arff(FILE *arff, atributo *atributos, int quantidade)
   // Recebe um arquivo arff com ponteiro de leitura no "@data";
   // passa por todas as linhas de dados e valida cada elementos de cada coluna em
   // relação ao vetor de atributos também fornecido como argumento.
-
-  // TO DO: Validar numericos
-  // TO DO: Verificar se o categorico existe
 
   char line[LINESIZE + 1];
   char *token;
@@ -250,17 +243,21 @@ void valida_arff(FILE *arff, atributo *atributos, int quantidade)
       // Para obter o próximo elemento
       if (!dadosConsistentes(atributos, line, quantidade, elementos, token))
       {
-        fprintf(stderr, "ERRO NA FORMATAÇÃO/TIPO DOS DADOS!\n");
+        fprintf(stderr, "Linha %d: ERRO NA FORMATAÇÃO/TIPO DOS DADOS! (arquivo de entrada)\n", linhas);
         exit(EXIT_FAILURE);
+      }
+      else
+      {
+        printf("Linha %d: ok\n", linhas);
       }
       token = strtok(NULL, ",");
 
       elementos++;
     }
 
-    if (quantidade != elementos) // verifica se a qtd de atributos corresponde a qtdade das colunas de daods
+    if (quantidade != elementos) // verifica se a qtd de atributos corresponde a qtdade das colunas de dados
     {
-      fprintf(stderr, "Erro: linha %d do arquivo arff\n", linhas);
+      fprintf(stderr, "Erro: linha %d do arquivo arff. A quantidade de colunas não corresponde ao número de atributos.\n", linhas);
       exit(EXIT_FAILURE);
     }
   }
