@@ -371,6 +371,7 @@ void get_firewall(atributo *dados, int quantidade)
     }
     while (fgets(line, sizeof(line), entidades) != NULL)
     {
+        printf("%ss", line);
         if (linhaEstaEmBranco(line))
             continue;
 
@@ -404,10 +405,5 @@ void get_firewall(atributo *dados, int quantidade)
     write_blacklist(sources, src_size, BLACKLIST);
     fclose(entidades);
 
-    for (int i = 0; i < src_size; i++)
-    {
-        free(sources[i]);
-    }
     free(sources);
-    free(entidades);
 }
