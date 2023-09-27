@@ -33,7 +33,7 @@ log *set_ataques(atributo elemento)
 
     for (int i = 0; i < elemento.size_categorias; i++)
     {
-        ataques_possiveis[i].nome = strdup(elemento.categorias[i]);
+        strcpy(ataques_possiveis[i].nome, elemento.categorias[i]);
         ataques_possiveis[i].ocorrencias = 0;
     }
 
@@ -201,7 +201,7 @@ void get_entidades(atributo *dados, int quantidade, FILE *arquivo)
             else if (i == id_src_add && nome == NULL)
             {
                 // coluna do src_add
-                nome = strdup(token);
+                strcpy(nome, token);
             }
             i++;
             token = strtok(NULL, ",");
@@ -221,7 +221,7 @@ void get_entidades(atributo *dados, int quantidade, FILE *arquivo)
         {
             entidades_tam += 1;
             entidades = realloc(entidades, entidades_tam * sizeof(log));
-            entidades[entidades_tam - 1].nome = strdup(nome);
+            strcpy(entidades[entidades_tam - 1].nome, nome);
             entidades[entidades_tam - 1].ocorrencias = ocorrencias;
             free(nome);
         }
@@ -311,7 +311,7 @@ void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
 
             if (col == id_pkt)
             {
-                novoLog.log_info.nome = strdup(token);
+                strcpy(novoLog.log_info.nome, token);
                 novoLog.log_info.ocorrencias++;
             }
             else if (col == id_avg_size)
@@ -352,7 +352,7 @@ void write_blacklist(char **sources, int size, char *filename)
     {
         char *escrita;
         printf("%s\n", sources[n]);
-        escrita = strdup(sources[n]);
+        strcpy(escrita, sources[n]);
         escrita = strcat(escrita, "\n");
 
         fputs(escrita, output);
@@ -383,24 +383,32 @@ void get_firewall(atributo *dados, int quantidade)
 
         token = strtok(line, ";");
         int col = 0;
-        char *src;
-        char *classificacao;
+        char *src = NULL;
+        char *classificacao = NULL;
         while (token != NULL)
         {
             if (col == 0)
             {
-                src = strdup(token);
+                src = malloc((strlen(token) + 1) * sizeof(char));
+                strcpy(src, token);
             }
             else if (col == 1)
             {
-                classificacao = strdup(token);
+                classificacao = malloc((strlen(token) + 1) * sizeof(char));
+                strcpy(classificacao, token);
                 if (strcmp(classificacao, "maliciosa") == 0)
                 {
                     src_size++;
                     sources = realloc(sources, src_size * LINESIZE);
-                    sources[src_size - 1] = strdup(src);
+                    strcpy(sources[src_size - 1], src);
                 }
             }
+
+            if (src != NULL)
+                free(src);
+
+            if (classificacao != NULL)
+                free(classificacao);
 
             col++;
             token = strtok(NULL, ";");

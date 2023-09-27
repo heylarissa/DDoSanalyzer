@@ -1,23 +1,24 @@
 CC = gcc
-CFLAGS = -Wall -std=c99 # gerar "warnings" detalhados e infos de depuração
- 
-objs = log.o arff.o
- 
-# regra default (primeira regra)
+CFLAGS = -Wall -g -std=c99
+
+objs = main.o arff.o log.o
+
 all: ddosanalyzer
- 
-# regras de ligacao
+
 ddosanalyzer: $(objs)
- 
-# regras de compilação
+	$(CC) $(CFLAGS) -o ddosanalyzer $(objs)
+
 main.o: main.c
-log.o:   log.c log.h
-arff.o: arff.c arff.h
- 
-# remove arquivos temporários
+	$(CC) $(CFLAGS) -c main.c
+
+arff.o: arff.c arff.h log.h
+	$(CC) $(CFLAGS) -c arff.c
+
+log.o: log.c log.h arff.h
+	$(CC) $(CFLAGS) -c log.c
+
 clean:
 	-rm -f $(objs) *~
- 
-# remove tudo o que não for o código-fonte
+
 purge: clean
-	-rm -f hello
+	-rm -f ddosanalyzer

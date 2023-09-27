@@ -104,7 +104,9 @@ void processa_categorias(atributo *elemento, char *categorias)
   int i;
   categorias[strlen(categorias) - 2] = '\0';
   categorias++; // Avance além do '{'
-  char *cat_copy = strdup(categorias);
+  char *cat_copy;
+  cat_copy = malloc((strlen(categorias) + 1) * sizeof(char));
+  strcpy(cat_copy, categorias);
 
   char *token = strtok(categorias, ",");
   int num_elementos = 0;
@@ -122,7 +124,8 @@ void processa_categorias(atributo *elemento, char *categorias)
 
   while (token != NULL)
   {
-    elemento->categorias[i] = strdup(token);
+    elemento->categorias[i] = malloc((strlen(token) + 1) * sizeof(char));
+    strcpy(elemento->categorias[i], token);
 
     token = strtok(NULL, ",");
     i++;
@@ -151,20 +154,23 @@ atributo *processa_atributos(FILE *arff, int quantidade)
     {
       atributo novoAtributo;
       char *token = strtok(line, " ");
-      token = strtok(NULL, " ");           // Pula o "@attribute"
-      novoAtributo.rotulo = strdup(token); // Copia o rótulo
-      token = strtok(NULL, " ");           // Pega o nome
+      token = strtok(NULL, " "); // Pula o "@attribute"
+      novoAtributo.rotulo = malloc((strlen(token) + 1) * sizeof(char));
+      strcpy(novoAtributo.rotulo, token); // Copia o rótulo
+      token = strtok(NULL, " ");          // Pega o nome
 
       if ((strcmp(token, "string\n") != 0) && (strcmp(token, "numeric\n") != 0))
       {
-        novoAtributo.tipo = strdup("categoric\n");
+        novoAtributo.tipo = malloc((strlen(token) + 1) * sizeof(char));
+        strcpy(novoAtributo.tipo, "categoric\n");
         processa_categorias(&novoAtributo, token);
       }
       else
       {
         novoAtributo.categorias = NULL;
         novoAtributo.size_categorias = 0;
-        novoAtributo.tipo = strdup(token); // Copia o tipo
+        novoAtributo.tipo = malloc((strlen(token) + 1) * sizeof(char));
+        strcpy(novoAtributo.tipo, token);
       }
 
       numAtributos++;

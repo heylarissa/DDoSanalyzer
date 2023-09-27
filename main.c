@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <getopt.h>
 
 #include "log.h"
 #include "arff.h"
@@ -24,7 +25,8 @@ int main(int argc, char **argv)
     switch (opt)
     {
     case 'i':
-      entrada = strdup(optarg); // optarg: nome do arquivo de entrada
+      entrada = malloc((strlen(optarg) + 1) * sizeof(optarg));
+      strcpy(entrada, optarg); // optarg: nome do arquivo de entrada
       break;
     case 'p':
       exibicao = 1;
