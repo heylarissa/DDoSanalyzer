@@ -118,7 +118,11 @@ void get_ataques(atributo *dados, int quantidade, FILE *arquivo)
             continue;
         }
         i = 0;
-        line[strlen(line) - 1] = '\0'; // remove \n do final do token
+
+        if (line[strlen(line) - 1] == '\n')
+        {
+            line[strlen(line) - 1] = '\0'; // remove \n do final do token
+        }
 
         token = strtok(line, ",");
         while (token != NULL)
@@ -223,8 +227,8 @@ void get_entidades(atributo *dados, int quantidade, FILE *arquivo)
             entidades = realloc(entidades, entidades_tam * sizeof(log));
             entidades[entidades_tam - 1].nome = strdup(nome);
             entidades[entidades_tam - 1].ocorrencias = ocorrencias;
-            free(nome);
         }
+        free(nome);
     }
 
     write_log_entidades(entidades, entidades_tam, ENTIDADES_FILE);
@@ -263,14 +267,15 @@ void write_size_file(log_size_avg *ataques, int ataques_size, char *filename)
     {
         if (ataques[k].log_info.ocorrencias != 0)
         {
-            char *escrita, num[LINESIZE + 1];
+            char escrita[LINESIZE + 1], num[LINESIZE + 1];
+            escrita[0] = '\0';
             int avg_size = ataques[k].sum_size / ataques[k].log_info.ocorrencias;
-            escrita = strcat(ataques[k].log_info.nome, ";");
+            strcat(escrita, ataques[k].log_info.nome);
+            strcat(escrita, ";");
             sprintf(num, "%d", avg_size);
-            escrita = strcat(escrita, num);
-            escrita = strcat(escrita, "\n");
+            strcat(escrita, num);
+            strcat(escrita, "\n");
             printf("%s", escrita);
-
             fputs(escrita, output);
         }
     }
@@ -338,6 +343,7 @@ void get_tamanho(atributo *dados, int quantidade, FILE *arquivo)
         {
             fprintf(stderr, "Não há valores de dados no arquivo de entrada.\n");
         }
+        free(novoLog.log_info.nome);
     }
     write_size_file(ataques, ataques_size, TAMANHOS_FILE);
 
@@ -348,14 +354,21 @@ void write_blacklist(char **sources, int size, char *filename)
 {
     FILE *output;
     output = fopen(filename, "w");
+    if (output == NULL)
+    {
+        perror("Erro ao abrir o arquivo de saída");
+        exit(EXIT_FAILURE);
+    }
     for (int n = 0; n < size; n++)
     {
         char *escrita;
         printf("%s\n", sources[n]);
         escrita = strdup(sources[n]);
+        escrita = realloc(escrita, strlen(escrita) + 2);
         escrita = strcat(escrita, "\n");
 
         fputs(escrita, output);
+        free(escrita);
     }
     fclose(output);
 }
@@ -407,9 +420,15 @@ void get_firewall(atributo *dados, int quantidade)
             col++;
             token = strtok(NULL, ";");
         }
+
+        free(src);
+        free(classificacao);
     }
     fclose(entidades);
     write_blacklist(sources, src_size, BLACKLIST);
-
+    for (int x = 0; x < src_size; x++)
+    {
+        free(sources[x]);
+    }
     free(sources);
 }

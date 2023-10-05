@@ -3,7 +3,7 @@ import sys
 
 FILE = "./A1"
 SOURCES = "".join([sys.argv[i] + " " for i in range(1, len(sys.argv))])
-TESTS = ["netlog.arff", "car-T1.arff", "iris-T1.arff", "netlog-T1.arff", "formacao-T2.arff",
+TESTS = ["smallnetlog.arff", "netlog.arff", "car-T1.arff", "iris-T1.arff", "netlog-T1.arff", "formacao-T2.arff",
          "formacao-T3.arff", "formacao-T4.arff", "formacao-T5.arff", "formacao-T6.arff", "formacao-INEX.arff"]
 RESULTS = []
 
